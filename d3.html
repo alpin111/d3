@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <style>
+        /* automatically breaks lines in <code> */
+        code,p {
+  white-space: pre;
+}
+    </style>
+</head>
+<body>
+
+
+<h1>d3</h1>
+<br>
+<h2>1. DOM selection</h2>
+<p class="myclass">First paragraph</p>
+<p id="p2">Second paragraph</p>
+
+<script>
+// select element by name (only selects the first)
+d3.select("p").style("color", "green");
+
+// select element by id
+d3.select("#p2").style("color", "blue");
+
+// select all elements
+d3.selectAll("p").style("text-decoration", "overline");
+
+// select by classname
+d3.selectAll(".myclass ").style("font-weight", "bold");
+
+</script>
+
+<h3>selecting nested elements</h3>
+<table>
+<tr>
+    <td>
+        One
+    </td>
+    <td>
+        Two
+    </td>
+</tr>
+<tr>
+    <td>
+        Three
+    </td>
+    <td>
+        Four
+    </td>
+</tr>
+</table>
+    
+<script>
+d3.select("tr").selectAll("td").style('background-color','yellow');
+</script>
+    
+
+<br>
+
+<h2>2. DOM manipulation</h2>
+<h3>text(), append(), insert(), remove(), html()</h3>
+<div>
+    <p id="p_empty">This Text will be replaced</p>
+    <p id="p_remove">This Text will be removed</p>
+    <p id="p_inner">This Text will be removed</p>
+</div>
+<p></p>
+<script>
+
+// Text insert
+d3.select("#p_empty").text("text(): This text was inserted into this existing <p> via DOM manipulation.")
+
+    // append DOM element
+d3.select("body").append("p").text("append(): This text was inserted into this <p>, which was in turn appended to body.");
+
+    // append DOM element
+d3.select("div").insert("p").text("insert(): This text was inserted into <p>, which was in turn inserted into <div>.");
+
+    // remove DOM element
+d3.select("#p_remove").remove();
+
+// inner html
+d3.select("#p_inner").html("<span>html() This is new inner html.</span>");
+</script>
+
+<h3>attr()</h3>
+
+<style>
+    .error {
+        color: red
+    }
+</style>
+
+
+<p id="p_red"> => set attributes (e.g. styles) of selected DOM elements, making this text red.</p>
+
+<h3>property()</h3>
+<p>D3</label><input type="checkbox" />
+<p>change properties like checkboxes</label><input type="checkbox" />
+
+
+<h3>style()</h3>
+<p id="p_style">Styles can be cumulatively set for selected elements</p>
+
+<h3>classed()</h3>
+<p class="p_class">classnames can be set or changed</p>
+
+<script>
+// set attr()
+d3.select("#p_red").attr("class","error");
+
+// set properties like checkboxes
+d3.select("input").property("checked",true);
+
+
+// change style
+d3.select("#p_style").style("font-weight", "bold")
+d3.select("#p_style").style("color", "blue")
+
+// change classname
+d3.select(".p_class").classed('error', true);
+</script>
+
+<br>
+<h2>3. Method chaining</h3>
+
+<code>
+var bodyElement = d3.select("body"); <br>
+var paragraph = bodyElement.append("p"); <br>
+paragraph.text("Hello World!");    
+</code>
+<p/>
+can be chained to: 
+<p/>
+<code>d3.select("body").append("p").text("Hello World!");</code>
+<p/>
+for better readability you can also break lines: 
+<p/>
+<code>
+d3.select("body")
+  .append("p")
+  .text("Third paragraph");
+</code>
+<p/>
+
+
+<br>
+<h2>4. Function of Data</h2>
+
+<p>d3 functions can take other functions as parameters.</p>
+<p>So instead of <code>text("a string")</code> you can also pass a function that returns a string:</p>
+<code>
+    .text(function(d) { 
+        return d; 
+    }); 
+</code>
+
+<p>Through the functions we can pass <b>data</b> (array), the <b>index</b> (of the data in the array) and <b>this</b> (ref of current DOM element) into the 3 empty p> below:</p>
+
+<div class="functionPs">
+<p></p>
+<p></p>
+<p></p>
+</div>
+
+<script>
+    var data = [100, 200, 300];
+    var paragraph = d3.select("body")
+            .select(".functionPs")
+            .selectAll("p")
+            .data(data)
+            .text(function (d, i) {
+                console.log("d: " + d);
+                console.log("i: " + i);
+                console.log("this: " + this);
+
+                return "data:"+ d + "  index:"+i + "  this:"+this;
+            });
+</script>
+
+<h3>Dynamic Properties</h3>
+
+<p>You can change properties based on your data!</p>
+<p>For example, depending on whether a string occurs in this paragraph, like "uniqueData1" will be blue</p>
+<p>while paragraphs containing "uniqueData2" will be red</p>
+
+
+<script>
+    d3.selectAll("p").style("color", function(d, i) {
+            var text = this.innerText;
+        
+            if (text.indexOf("uniqueData1") >= 0) {
+                return "blue";
+            } else if (text.indexOf("uniqueData2") >= 0) {
+                return "red";
+            }
+    });
+</script>
+
+
+
+<br>
+<h2>5. Event handling</h2>
+<style>
+    .eventTest {
+        height: 100px;
+        width: 100px;
+        background-color: steelblue;
+        margin:5px;
+    }
+</style>
+<div class="eventTest"> </div>
+<p>d3 supports built-in and custom events, like mouseover etc.</p>
+
+
+<script>
+    d3.selectAll(".eventTest")
+      .on("mouseover", function(){
+          d3.select(this)
+            .style("background-color", "orange");
+
+          // Get current event info
+          console.log(d3.event);
+          
+          // Get x & y co-ordinates
+          console.log(d3.mouse(this));
+      })
+      .on("mouseout", function(){
+          d3.select(this)
+            .style("background-color", "steelblue")
+      });
+</script>
+
+
+
+<br>
+<h2>6. Animations</h2>
+
+<p>d3 simplifies animations with transitions, made with <code>DOM selections using <selection>.transition() method</code></p>
+
+<h2>transition()</h2>
+<style>
+    #container {
+        height: 100px;
+        width: 100px;
+        background-color: black;
+    }
+</style>
+
+<p>changes color from black to red in 1000 milliseconds</p>
+<div id="container"></div>
+
+<script>
+    d3.select("#container")
+      .transition()
+      .duration(1000)
+      .style("background-color", "red");
+</script>
+
+<p>transitions can also be stored in a variable and be applied to various elements</p>
+<code>
+var t = d3.transition()
+        .duration(500)
+
+    d3.select("#container")
+      .transition(t)
+      .style("background-color", "red");
+</code>
+
+
+
+<h3>transition.delay</h3>
+
+<script>
+    var svg = d3.select("body")
+        .append("svg")
+        .attr("width", 500)
+        .attr("height", 500);
+
+
+    var bar1 = svg.append("rect")
+        .attr("fill", "blue")
+        .attr("x", 100)
+        .attr("y", 20)
+        .attr("height", 20)
+        .attr("width", 10)
+
+    var bar2 = svg.append("rect")
+        .attr("fill", "blue")
+        .attr("x", 120)
+        .attr("y", 20)
+        .attr("height", 20)
+        .attr("width", 10)
+
+    update();
+
+function update() {
+    bar1.transition()
+        .ease(d3.easeLinear)
+        .duration(2000)
+        .attr("height",100)
+
+    bar2.transition()
+        .ease(d3.easeLinear)
+        .duration(2000)
+        .delay(2000)
+        .attr("height",100)
+}
+</script>
+
+<h2>8. Data Binding</h2>
+
+<p>
+data() 	
+Joins data to the selected elements
+
+enter() 	
+Creates a selection with placeholder references for missing elements
+
+exit() 	
+Removes nodes and adds them to the exit selection which can be later removed from the DOM
+
+datum() 	
+Injects data to the selected element without computing a join. 
+</p>
+
+<h3>data()</h3>
+<p>
+D3 works with different types of data like Array, CSV, TSV, JSON, XML etc. 
+You can pass two types of value to the data() function, an array of values (number or object) or a function of data.
+</p>
+
+<p>2 existing p> marked by id to be filled with data</p>
+<p id="pData">this text will be replaced by the first item in data array</p>
+<p id="pData">and the second</p>
+
+<script>
+        var myData = ["Hello World!", "more data taken from the array", "3rd item will not be shown because not enough existing elements"];
+     
+        var p = d3.select("body")
+            .selectAll("#pData")
+            .data(myData)
+            .text(function (d) {
+                return d;
+            });
+</script>
+
+<h3>enter()</h3>
+<p>
+data() is nice, but what if you want to create elements dynamically depending on the length of your data array?
+enter enter()!
+it dynamically creates placeholder references corresponding to the number of data values.
+</p>
+
+<code>
+    var data = [4, 1, 6, 2, 8, 9];
+    var body = d3.select("body")
+                .selectAll("span")
+                .data(data)
+                .enter()
+                .append("span")
+                .text(function(d) { return d + " "; });
+</code>
+
+<div id="enter()here"/>
+
+<script>
+    var data = [4, 1, 6, 2, 8, 9];
+    var body = d3.select("#enter()here")
+                // d3 magic!selectAll will work with placeholders
+                .selectAll("span") 
+                .data(data)
+                .enter()
+                .append("span")
+                .text(function(d) { return d + " "; });
+</script>
+
+
+
+
+
+<h2>9. Data loading</h2>
+<p>D3 provides the following methods to load different types of data from external files. 
+    Sends http request to the specified url to load .json file or data and executes callback function with parsed json data objects.
+    
+    d3.csv() 	
+    d3.json() 	
+    d3.tsv() 	
+    d3.xml() 	
+</p>
+
+employee.csv:
+<code>
+    Name, Age
+    John, 30
+    Jane, 32
+</code>
+
+<br>
+Example: Loading CSV Data:
+<code>
+    d3.csv("/data/employees.csv", function(data) {
+        for (var i = 0; i < data.length; i++) {
+            console.log(data[i].Name);
+            console.log(data[i].Age);
+        }
+    });
+</code>
+
+<!-- you need a local web server for this to work -->
+<!-- this will return the entire data -->
+<script>
+    d3.csv("/data/employees.csv", function(data) {
+    console.log(data);    
+});
+</script>
+
+<script>
+d3.csv("./data/employees.csv")
+  .row(function(d) {
+        console.log(d);
+        console.log(d.Name);
+        console.log(d[" Age"]);
+        return {
+            age: d[" Age"],
+            name: d.Name.toUpperCase() // converting name to upper case 
+        }; 
+   })
+  .get(function(data) {
+      console.log(data);
+  });
+</script>
+
+<h3>JSON</h3>
+<p>
+
+Using JSONs
+</p>
+
+<div id="emptyDIV"></div>
+
+<script>
+d3.json("./data/people.json", function(error, data) {
+
+    console.log(data); 
+
+    // error handling
+    if (error) {
+        return console.warn(error);
+    }
+    
+    d3.select("#emptyDIV")
+        .selectAll("p")
+        .data(data)
+        .enter()
+        .append("p")
+        .text(function(d) {
+            console.log(d); 
+            return d.name + ", " + d.location;
+        });
+
+        
+});
+</script>
+
+
+<br>
+<h2>10. creating SVG elements</h2>
+
+<p>standard method for a black rectangle:</p>
+
+<code>
+    &lt;svg width="500" height="500">
+    &lt;rect x="0" y="0" width="200" height="200">&lt;/rect>
+    &lt;/svg>
+
+</code>
+
+<svg width="200" height="200">
+    <rect x="0" y="0" width="200" height="200"></rect>
+</svg>
+
+<p>standard method for a line:</p>
+
+<code>
+    &lt;svg width="500" height="200">
+    &lt;line x1="100" y1="100" x2="500" y2="100" />
+    &lt;/svg>
+    
+</code>
+
+<svg width="500" height="200">
+    <line x1="100" y1="50" x2="500" y2="50" stroke="black"/>
+</svg>
+
+
+<p>The d3 method to create a line:</p>
+
+<div id="createLineHere"/>
+
+<code>
+    var width = 200;
+    var height = 200;
+
+    //Create SVG element
+    var svg = d3.select("body")
+    .append("svg")
+    .attr("width", width)
+    .attr("height", height);
+
+    //Create line element inside SVG
+    svg.append("line")
+       .attr("x1", 100)
+       .attr("x2", 500)
+       .attr("y1", 50)
+       .attr("y2", 50)
+       .attr("stroke", "black")
+</code>
+
+<script>
+    var width = 500;
+    var height = 500;
+
+    //Create SVG element
+    var svg = d3.select("#createLineHere")
+    .append("svg")
+    .attr("width", width)
+    .attr("height", height);
+
+    //Create line element inside SVG
+    svg.append("line")
+       .attr("x1", 100)
+       .attr("x2", 500)
+       .attr("y1", 50)
+       .attr("y2", 50)
+       .attr("stroke", "black")
+</script>
+
+
+
+
+<h2>11. create SVG chart</h2>
+<div class="SVGcharts">
+<style>
+    .SVGcharts svg rect {
+        fill: orange;
+    }
+
+    .SVGcharts svg text {
+        fill:white;
+        font: 10px sans-serif;
+        text-anchor: end;
+    }
+</style>
+
+<svg class="chart" width="420" height="60">
+    <g transform="translate(0,0)">
+        <rect width="50" height="19"></rect>
+        <text x="47" y="9.5" dy=".35em">5</text>
+    </g>
+    <g transform="translate(0,20)">
+        <rect width="100" height="19"></rect>
+        <text x="97" y="9.5" dy=".35em">10</text>
+    </g>
+    <g transform="translate(0,40)">
+        <rect width="120" height="19"></rect>
+        <text x="117" y="9.5" dy=".35em">12</text>
+    </g>
+</svg>
+
+<!-- svg charts -->
+</div> 
+
+<p>
+<code>&lt;g></code> is a group element to hold rectangles and text together. 
+Transforms can be applied to group elements.
+
+This is how it is rendered dynamically from a data array (unlike above, no styles):
+</p>
+
+<div id="dynamicChart" />
+
+<script>
+    var data = [5, 10, 12];
+    var width = 200,
+    scaleFactor = 10,
+    barHeight = 20;
+
+    var graph = d3.select("#dynamicChart")
+              .append("svg")
+              .attr("width", width)
+              .attr("height", barHeight * data.length);
+
+    var bar = graph.selectAll("g")
+              .data(data)
+              .enter()
+              .append("g")
+              .attr("transform", function(d, i) {
+                    return "translate(0," + i * barHeight + ")";
+              });
+
+bar.append("rect")
+   .attr("width", function(d) {
+            return d * scaleFactor;
+   })
+   .attr("height", barHeight - 1);
+
+bar.append("text")
+   .attr("x", function(d) { return (d*scaleFactor); })
+   .attr("y", barHeight / 2)
+   .attr("dy", ".35em")
+   .text(function(d) { return d; });
+
+</script>
+
+
+
+
+
+
+
+
+
+<p>alternatively with a circle chart:</p>
+<div id="circleChart"/>
+
+<script>
+
+var width = 500;
+var height = 500;
+
+var data = [10, 15, 20, 25, 30];
+var colors = ['#ffffcc','#c2e699','#78c679','#31a354','#006837'];
+
+var svg = d3.select("#circleChart")
+            .append("svg")
+            .attr("width", width)
+            .attr("height", height);
+
+var g = svg.selectAll("g")
+            .data(data)
+            .enter()
+            .append("g")
+            .attr("transform", function(d, i) {
+                return "translate(0,0)";
+            })
+
+    g.append("circle")
+      .attr("cx", function(d, i) {
+            return i*100 + 50;
+      })
+      .attr("cy", function(d, i) {
+            return 100;
+      })
+      .attr("r", function(d) {
+            return d*1.5;
+      })
+      .attr("fill", function(d, i){
+            return colors[i];
+      })
+
+    g.append("text")
+     .attr("x", function(d, i) {
+            return i * 100 + 40;
+     })
+     .attr("y", 105)
+     .attr("stroke", "teal")
+     .attr("font-size", "12px")
+     .attr("font-family", "sans-serif")
+     .text(function(d) {
+            return d;
+     });
+
+</script>
+
+<h2>12. scales</h2>
+
+<p>Scales warp your visualization to show data that would otherwise be off the chart because they are too small or too big.
+Scales can work logarithmically, squareRoot, linear, or as is (identical).
+</p>
+
+<div id="scaleDiv" />
+
+
+<script>
+    var data = [10,20, 5, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000]
+
+    var width = 1000,
+        barHeight = 20,
+        margin = 1;
+
+    var scale = d3.scaleSqrt() // scaleLog() // ScaleIdentity() // ScaleLinear()
+                 .domain([d3.min(data), d3.max(data)])
+                 .range([100, 1000]);
+
+    var svg = d3.select("#scaleDiv")
+                  .append("svg")
+                  .attr("width", width)
+                  .attr("height", barHeight * data.length);
+
+    var g = svg.selectAll("g")
+                  .data(data)
+                  .enter()
+                  .append("g")
+                  .attr("transform", function (d, i) {
+                      return "translate(0," + i * barHeight + ")";
+                  });
+
+    g.append("rect")
+       .attr("width", function (d) {
+           return scale(d);
+       })
+       .attr("height", barHeight - margin)
+
+    g.append("text")
+       .attr("x", function (d) { return (scale(d)); })
+       .attr("y", barHeight / 2)
+       .attr("dy", ".35em")
+       .attr("text-anchor", "end")
+       .attr("fill", "white")
+       .attr("font", "10px sans-serif")
+       .text(function (d) { return d; });
+</script>
+
+
+
+
+
+
+
+
+</body>
+</html>
+
