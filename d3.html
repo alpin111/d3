@@ -777,7 +777,7 @@ Axes are embedded within SVGs groups:
 <script>
     var width = 400, height = 400;
     
-    var data = [10, 15, 20, 25, 30];
+    // var data = [10, 15, 20, 25, 30];
     var svg = d3.select("#axes2")
         .append("svg")
         .attr("width", width)
@@ -802,7 +802,8 @@ Axes are embedded within SVGs groups:
            .attr("transform", "translate(50, 10)")
            .call(y_axis);
     
-    var xAxisTranslate = height/2 + 10;
+    // +10 because the svg group above is translated by (50, 10)
+    var xAxisTranslate = height/2 + 10; 
     
         svg.append("g")
                 .attr("transform", "translate(50, " + xAxisTranslate  +")")
