@@ -783,6 +783,7 @@ Axes are embedded within SVGs groups:
         .attr("width", width)
         .attr("height", height);
     
+        // axes should be scaled the same as the visualization
     var xscale = d3.scaleLinear()
         .domain([0, d3.max(data)])
         .range([0, width - 100]);
